@@ -1,25 +1,22 @@
 package functions;
 
 public class Batch {
-    private String batchName;
+    private int batchName;
     private int batchStatus;
 
-    // Default Constructor
     public Batch() {
     }
 
-    // Parameterized Constructor
-    public Batch(String batchName, int batchStatus) {
+    public Batch(int batchName, int batchStatus) {
         this.batchName = batchName;
         this.batchStatus = batchStatus;
     }
 
-    // Getters and Setters
-    public String getBatchName() {
+    public int getBatchName() {
         return batchName;
     }
 
-    public void setBatchName(String batchName) {
+    public void setBatchName(int batchName) {
         this.batchName = batchName;
     }
 

@@ -4,6 +4,7 @@
  */
 package gui;
 
+
 /**
  *
  * @author aloka
@@ -171,7 +172,7 @@ public class addStudentForm extends javax.swing.JFrame {
 
         try {
             int num = Integer.parseInt(tempBatch);
-            if (.checkBatchStatus(num)) {
+            if (functions.BatchController.checkBatchStatus(num)) {
                 batchNo = num;
                 txtBatch.setEditable(true);
                 txtNIC.setEditable(true);

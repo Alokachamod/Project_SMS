@@ -7,101 +7,121 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * Controller class for managing Batch operations.
- */
 public class BatchController {
 
     public static final int ENROLLMENT_OPEN = 1;
     public static final int ENROLLMENT_CLOSED = 0;
 
     /**
-     * Adds a new batch record into the database.
+     * Replaces addBatch: Inserts a new batch into the database.
      */
-    public static boolean addNewBatch(Batch batch) throws ClassNotFoundException, SQLException {
+    public static boolean addBatch(Batch newBatch) throws ClassNotFoundException, SQLException {
         String sql = "INSERT INTO batches (batchName, batchStatus) VALUES (?, ?)";
         Connection connection = DBConnection.getInstance().getConnection();
-        
+
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
-            stm.setString(1, batch.getBatchName());
-            stm.setInt(2, batch.getBatchStatus());
+            stm.setInt(1, newBatch.getBatchName());
+            stm.setInt(2, newBatch.getBatchStatus());
             return stm.executeUpdate() > 0;
         }
     }
 
     /**
-     * Searches a batch by its name/id.
+     * Searches a batch by number and returns the Batch object (or null if not found).
      */
-    public static Batch searchBatch(String batchName) throws ClassNotFoundException, SQLException {
+    public static Batch searchBatch(int batchNum) throws ClassNotFoundException, SQLException {
         String sql = "SELECT * FROM batches WHERE batchName = ?";
         Connection connection = DBConnection.getInstance().getConnection();
-        
+
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
-            stm.setString(1, batchName);
-            ResultSet rst = stm.executeQuery();
-            if (rst.next()) {
-                return new Batch(
-                    rst.getString("batchName"),
-                    rst.getInt("batchStatus")
-                );
+            stm.setInt(1, batchNum);
+            try (ResultSet rst = stm.executeQuery()) {
+                if (rst.next()) {
+                    return new Batch(
+                        rst.getInt("batchName"),
+                        rst.getInt("batchStatus")
+                    );
+                }
             }
         }
         return null;
     }
 
     /**
-     * Deletes a batch by name/id.
+     * Replaces isBatchExists: Checks if a batch exists in the database.
      */
-    public static boolean deleteBatch(String batchName) throws ClassNotFoundException, SQLException {
-        String sql = "DELETE FROM batches WHERE batchName = ?";
-        Connection connection = DBConnection.getInstance().getConnection();
-        
-        try (PreparedStatement stm = connection.prepareStatement(sql)) {
-            stm.setString(1, batchName);
-            return stm.executeUpdate() > 0;
-        }
+    public static boolean isBatchExists(int batchNum) throws ClassNotFoundException, SQLException {
+        return searchBatch(batchNum) != null;
     }
 
     /**
-     * Updates an existing batch status by its name.
+     * Replaces checkBatchStatus: Checks if the batch enrollment is currently open.
      */
-    public static boolean updateBatch(Batch batch) throws ClassNotFoundException, SQLException {
-        String sql = "UPDATE batches SET batchStatus = ? WHERE batchName = ?";
-        Connection connection = DBConnection.getInstance().getConnection();
-        
-        try (PreparedStatement stm = connection.prepareStatement(sql)) {
-            stm.setInt(1, batch.getBatchStatus());
-            stm.setString(2, batch.getBatchName());
-            return stm.executeUpdate() > 0;
-        }
-    }
-
-    /**
-     * Checks if enrollment is open for a given batch.
-     */
-    public static boolean checkBatchStatus(String batchName) throws ClassNotFoundException, SQLException {
-        Batch batch = searchBatch(batchName);
+    public static boolean checkBatchStatus(int batchNum) throws ClassNotFoundException, SQLException {
+        Batch batch = searchBatch(batchNum);
         return batch != null && batch.getBatchStatus() == ENROLLMENT_OPEN;
     }
 
     /**
-     * Retrieves all batches as an array.
+     * Replaces enrollmentStatus: Returns the status description string for a given batch number.
      */
-    public static Batch[] getAllBatch() throws ClassNotFoundException, SQLException {
+    public static String getEnrollmentStatus(int batchNum) throws ClassNotFoundException, SQLException {
+        Batch batch = searchBatch(batchNum);
+        if (batch != null) {
+            if (batch.getBatchStatus() == ENROLLMENT_OPEN) {
+                return "ENROLLMENT OPEN";
+            } else if (batch.getBatchStatus() == ENROLLMENT_CLOSED) {
+                return "ENROLLMENT CLOSED";
+            }
+        }
+        return "Unknown Status";
+    }
+
+    /**
+     * Replaces getAllBatches: Retrieves all batches from the database.
+     */
+    public static Batch[] getAllBatches() throws ClassNotFoundException, SQLException {
         String sql = "SELECT * FROM batches";
         Connection connection = DBConnection.getInstance().getConnection();
-        
+
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rst = stm.executeQuery()) {
-            
+
             ArrayList<Batch> batchList = new ArrayList<>();
             while (rst.next()) {
                 batchList.add(new Batch(
-                    rst.getString("batchName"),
+                    rst.getInt("batchName"),
                     rst.getInt("batchStatus")
                 ));
             }
             return batchList.toArray(new Batch[0]);
+        }
+    }
+
+    /**
+     * Updates an existing batch status in the database.
+     */
+    public static boolean updateBatchStatus(int batchNum, int newStatus) throws ClassNotFoundException, SQLException {
+        String sql = "UPDATE batches SET batchStatus = ? WHERE batchName = ?";
+        Connection connection = DBConnection.getInstance().getConnection();
+
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setInt(1, newStatus);
+            stm.setInt(2, batchNum);
+            return stm.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Deletes a batch from the database.
+     */
+    public static boolean deleteBatch(int batchNum) throws ClassNotFoundException, SQLException {
+        String sql = "DELETE FROM batches WHERE batchName = ?";
+        Connection connection = DBConnection.getInstance().getConnection();
+
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setInt(1, batchNum);
+            return stm.executeUpdate() > 0;
         }
     }
 }
