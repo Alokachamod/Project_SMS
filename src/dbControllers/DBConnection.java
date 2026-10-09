@@ -24,7 +24,7 @@ public class DBConnection {
         return dBConnection;
     }
     
-    public Connection getConnetion() throws ClassNotFoundException, SQLException{
+    public Connection getConnection() throws ClassNotFoundException, SQLException{
         return connection;
     }
 }

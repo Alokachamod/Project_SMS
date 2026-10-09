@@ -15,7 +15,7 @@ import dbControllers.DBConnection;
 public class StudentController {
     public static  boolean addNeStudent(Student student) throws ClassNotFoundException, SQLException{
         String SQL="Insert into Student values(?,?,?,?)"; //Step 1
-        Connection connection = DBConnection.getInstance().getConnetion();
+        Connection connection = DBConnection.getInstance().getConnection();
         PreparedStatement stm = connection.prepareStatement(SQL); //Step 4
         stm.setObject(1,student.getId());
         stm.setObject(2,student.getName());
@@ -26,7 +26,7 @@ public class StudentController {
 
     public static Student searchStudent(String id) throws FileNotFoundException, ClassNotFoundException, SQLException {
         String SQL="Select * From Student where id='"+id+"'";
-        Connection connection = DBConnection.getInstance().getConnetion();
+        Connection connection = DBConnection.getInstance().getConnection();
         Statement stm = connection.createStatement();
         ResultSet rst = stm.executeQuery(SQL);
         if(rst.next()){
@@ -39,12 +39,12 @@ public class StudentController {
         Connection connection=dbc.getConnection();
         Statement stm = connection.createStatement();
         stm.executeUpdate("Delete From Student where id='"+id+"'");*/
-        return DBConnection.getInstance().getConnetion().createStatement().executeUpdate("Delete From Student where id='"+id+"'")>0;
+        return DBConnection.getInstance().getConnection().createStatement().executeUpdate("Delete From Student where id='"+id+"'")>0;
     }
 
     public static boolean updateStudent(Student student) throws ClassNotFoundException, SQLException {
         String SQL="Update Student Set name=?, prfMarks=?, dbmsMarks=? where id=?";
-        Connection connection = DBConnection.getInstance().getConnetion();
+        Connection connection = DBConnection.getInstance().getConnection();
         PreparedStatement stm = connection.prepareStatement(SQL); //Step 4
         stm.setObject(1,student.getName());
         stm.setObject(2,student.getPrfMarks());
@@ -54,7 +54,7 @@ public class StudentController {
     }
 
    public static String getNewStudentId() throws ClassNotFoundException, SQLException {
-        ResultSet rst = DBConnection.getInstance().getConnetion().createStatement().executeQuery("Select id from Student order by id desc limit 1");
+        ResultSet rst = DBConnection.getInstance().getConnection().createStatement().executeQuery("Select id from Student order by id desc limit 1");
         if(rst.next()){
             int newIdNo=Integer.parseInt(rst.getString("id").substring(1));
             return String.format("S%04d", newIdNo+1);
@@ -63,7 +63,7 @@ public class StudentController {
     }
 
     public static Student[] getAllStudent() throws ClassNotFoundException, SQLException {
-        ResultSet rst = DBConnection.getInstance().getConnetion().createStatement().executeQuery("Select * From Student");
+        ResultSet rst = DBConnection.getInstance().getConnection().createStatement().executeQuery("Select * From Student");
         Student[] studentArray=new Student[0];
         while(rst.next()){
             Student[] tempStudentArray=new Student[studentArray.length+1];
