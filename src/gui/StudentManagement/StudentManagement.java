@@ -19,6 +19,7 @@ public class StudentManagement extends javax.swing.JFrame {
      */
     public StudentManagement() {
         initComponents();
+        
     }
 
     /**
@@ -76,6 +77,7 @@ public class StudentManagement extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Student Management");
 
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Choose  an option from the menu below to get started");
 
@@ -164,7 +166,8 @@ public class StudentManagement extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBatchActionPerformed
 
     private void btnAddStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddStudentActionPerformed
-        
+        new addStudentForm().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnAddStudentActionPerformed
 
     /**

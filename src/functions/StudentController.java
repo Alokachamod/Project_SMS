@@ -7,6 +7,10 @@ package functions;
 import java.sql.*;
 import java.io.FileNotFoundException;
 import dbControllers.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 /**
  *
  * @author pc
@@ -76,5 +80,48 @@ public class StudentController {
             studentArray[studentArray.length - 1] = student;
         }
         return studentArray;
+        
+        
     }
+    
+    public String generateStuId(int y, String mode) throws SQLException, ClassNotFoundException {
+        boolean isPhysical = mode.trim().equalsIgnoreCase("PHYSICAL");
+        String prefix = (isPhysical ? "PR26" : "OR26") + y;
+
+        // Query the highest ID matching the current prefix pattern
+        String sql = "SELECT id FROM student WHERE id LIKE ? ORDER BY id DESC LIMIT 1";
+
+        Connection conn = DBConnection.getInstance().getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        pstm.setString(1, prefix + "%");
+
+        ResultSet rs = pstm.executeQuery();
+
+        if (rs.next()) {
+            String lastId = rs.getString("id");
+            // Extract the last 3 numeric digits
+            String lastNumStr = lastId.substring(lastId.length() - 3);
+            int nextCount = Integer.parseInt(lastNumStr) + 1;
+            return prefix + String.format("%03d", nextCount);
+        } else {
+            // First student for this year/prefix
+            return prefix + "001";
+        }
+    }
+
+    public boolean checkNic(String nic) throws SQLException, ClassNotFoundException {
+        // Check if any record exists with the provided NIC
+        String sql = "SELECT 1 FROM student WHERE nic = ? LIMIT 1";
+
+        Connection conn = DBConnection.getInstance().getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        pstm.setString(1, nic.trim());
+
+        ResultSet rs = pstm.executeQuery();
+
+        // Returns true if a match is found, false otherwise
+        return rs.next();
+    }
+    
+    
 }

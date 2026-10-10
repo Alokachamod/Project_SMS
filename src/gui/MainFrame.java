@@ -167,6 +167,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void btnStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStudentActionPerformed
 
         new StudentManagement().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnStudentActionPerformed
 
     /**

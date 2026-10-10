@@ -30,7 +30,7 @@ public class BatchController {
      * Searches a batch by number and returns the Batch object (or null if not found).
      */
     public static Batch searchBatch(int batchNum) throws ClassNotFoundException, SQLException {
-        String sql = "SELECT * FROM batches WHERE batchName = ?";
+        String sql = "SELECT * FROM batches WHERE batch_name = ?";
         Connection connection = DBConnection.getInstance().getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
@@ -38,8 +38,8 @@ public class BatchController {
             try (ResultSet rst = stm.executeQuery()) {
                 if (rst.next()) {
                     return new Batch(
-                        rst.getInt("batchName"),
-                        rst.getInt("batchStatus")
+                        rst.getInt("batch_name"),
+                        rst.getInt("batch_status")
                     );
                 }
             }
