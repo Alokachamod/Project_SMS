@@ -2,7 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package gui;
+package gui.StudentManagement;
+
+import javax.swing.JOptionPane;
 
 
 /**
@@ -16,6 +18,10 @@ public class addStudentForm extends javax.swing.JFrame {
      */
     public addStudentForm() {
         initComponents();
+        txtNIC.setEditable(false);
+        txtName.setEditable(false);
+        txtMode.setEditable(false);
+        txtNIC.requestFocus();
     }
 
     /**
@@ -173,7 +179,7 @@ public class addStudentForm extends javax.swing.JFrame {
         try {
             int num = Integer.parseInt(tempBatch);
             if (functions.BatchController.checkBatchStatus(num)) {
-                batchNo = num;
+                
                 txtBatch.setEditable(true);
                 txtNIC.setEditable(true);
                 txtName.setEditable(true);
