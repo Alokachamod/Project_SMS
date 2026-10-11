@@ -6,6 +6,11 @@ package gui.StudentManagement;
 
 import com.mysql.cj.util.StringUtils;
 import javax.swing.JOptionPane;
+import functions.Student;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import functions.*;
 
 /**
  *
@@ -229,39 +234,53 @@ public class addStudentForm extends javax.swing.JFrame {
 
     private void btnAddStudentKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnAddStudentKeyPressed
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            int batchNum = Integer.parseInt(txtBatch.getText());
-            String name = txtName.getText();
-            String nic = txtNIC.getText();
-            String mode = txtMode.getText();
-            
-            if (functions.StudentController.) {
-					JOptionPane.showMessageDialog(null, "This Student is already added to the system.");
-				} else {
-					try {
-						
-						String stu_id = functions.(batchNum, mode);
-						
-						Student newStudent = new Student(stu_id, nic, name, -2, -2);
-						studentCollection.addNewStudent(newStudent);
-						
-					
-						lblSuccessName.setText(name + " Successfully Added!");
-						lblSuccessId.setText("Registration No : " + stu_id);
-						
-						cardLayout.show(mainContentPanel, "SuccessView");
-						
-						txtBatch.setText("");
-						txtNIC.setText("");
-						txtName.setText("");
-						txtMode.setText("");
-						txtNIC.setEditable(false);
-						txtName.setEditable(false);
-						txtMode.setEditable(false);
-						
-					} catch (Exception e) {
-						JOptionPane.showMessageDialog(null, "Error processing student data.");
-					}
-				}
+            try {
+                int batchNum = Integer.parseInt(txtBatch.getText());
+                String name = txtName.getText();
+                String nic = txtNIC.getText();
+                String mode = txtMode.getText();
+
+                if (!functions.StudentController.checkNic(nic)) {
+                    try {
+
+                        String stu_id = functions.StudentController.generateStuId(batchNum, mode);
+
+                        Student newStudent = new Student(stu_id, nic, name, -2, -2);
+                        functions.StudentController.addNeStudent(newStudent);
+
+                        String message = "<html>"
+                                + "<h3 style='color:green;'>" + name + " Successfully Added!</h3>"
+                                + "<p><b>Registration No : </b>" + stu_id + "</p>"
+                                + "</html>";
+
+                        javax.swing.JOptionPane.showMessageDialog(
+                                this,
+                                message,
+                                "Success",
+                                javax.swing.JOptionPane.INFORMATION_MESSAGE
+                        );
+
+                        txtBatch.setText("");
+                        txtNIC.setText("");
+                        txtName.setText("");
+                        txtMode.setText("");
+                        txtNIC.setEditable(false);
+                        txtName.setEditable(false);
+                        txtMode.setEditable(false);
+
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Error processing student data.");
+                        e.printStackTrace();
+                        
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "This Student is already added to the system.");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(addStudentForm.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(addStudentForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         }
     }//GEN-LAST:event_btnAddStudentKeyPressed

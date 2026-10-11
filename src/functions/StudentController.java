@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 /**
  *
  * @author pc
@@ -18,18 +19,19 @@ import java.sql.SQLException;
 public class StudentController {
 
     public static boolean addNeStudent(Student student) throws ClassNotFoundException, SQLException {
-        String SQL = "Insert into Student values(?,?,?,?)"; //Step 1
+        String SQL = "INSERT INTO Students (id, name, nic, prf_marks, dbms_marks) VALUES (?, ?, ?, ?, ?)"; //Step 1
         Connection connection = DBConnection.getInstance().getConnection();
         PreparedStatement stm = connection.prepareStatement(SQL); //Step 4
         stm.setObject(1, student.getId());
         stm.setObject(2, student.getName());
-        stm.setObject(3, student.getPrfMarks());
-        stm.setObject(4, student.getDbmsMarks());
+        stm.setObject(3, student.getNic());
+        stm.setObject(4, student.getPrfMarks());
+        stm.setObject(5, student.getDbmsMarks());
         return stm.executeUpdate() > 0;
     }
 
     public static Student searchStudent(String id) throws FileNotFoundException, ClassNotFoundException, SQLException {
-        String SQL = "Select * From Student where id='" + id + "'";
+        String SQL = "Select * From Students where id='" + id + "'";
         Connection connection = DBConnection.getInstance().getConnection();
         Statement stm = connection.createStatement();
         ResultSet rst = stm.executeQuery(SQL);
@@ -48,7 +50,7 @@ public class StudentController {
     }
 
     public static boolean updateStudent(Student student) throws ClassNotFoundException, SQLException {
-        String SQL = "Update Student Set name=?, prfMarks=?, dbmsMarks=? where id=?";
+        String SQL = "Update Students Set name=?, prfMarks=?, dbmsMarks=? where id=?";
         Connection connection = DBConnection.getInstance().getConnection();
         PreparedStatement stm = connection.prepareStatement(SQL); //Step 4
         stm.setObject(1, student.getName());
@@ -80,16 +82,15 @@ public class StudentController {
             studentArray[studentArray.length - 1] = student;
         }
         return studentArray;
-        
-        
+
     }
-    
-    public String generateStuId(int y, String mode) throws SQLException, ClassNotFoundException {
+
+    public static String generateStuId(int y, String mode) throws SQLException, ClassNotFoundException {
         boolean isPhysical = mode.trim().equalsIgnoreCase("PHYSICAL");
         String prefix = (isPhysical ? "PR26" : "OR26") + y;
 
         // Query the highest ID matching the current prefix pattern
-        String sql = "SELECT id FROM student WHERE id LIKE ? ORDER BY id DESC LIMIT 1";
+        String sql = "SELECT id FROM students WHERE id LIKE ? ORDER BY id DESC LIMIT 1";
 
         Connection conn = DBConnection.getInstance().getConnection();
         PreparedStatement pstm = conn.prepareStatement(sql);
@@ -109,9 +110,9 @@ public class StudentController {
         }
     }
 
-    public boolean checkNic(String nic) throws SQLException, ClassNotFoundException {
+    public static boolean checkNic(String nic) throws SQLException, ClassNotFoundException {
         // Check if any record exists with the provided NIC
-        String sql = "SELECT 1 FROM student WHERE nic = ? LIMIT 1";
+        String sql = "SELECT 1 FROM students WHERE nic = ? LIMIT 1";
 
         Connection conn = DBConnection.getInstance().getConnection();
         PreparedStatement pstm = conn.prepareStatement(sql);
@@ -122,6 +123,5 @@ public class StudentController {
         // Returns true if a match is found, false otherwise
         return rs.next();
     }
-    
-    
+
 }
