@@ -97,6 +97,11 @@ public class addStudentForm extends javax.swing.JFrame {
         btnCancel.setFont(new java.awt.Font("Segoe UI Historic", 1, 18)); // NOI18N
         btnCancel.setForeground(new java.awt.Color(255, 255, 255));
         btnCancel.setText("Cancel");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         btnAddStudent.setBackground(new java.awt.Color(0, 0, 153));
         btnAddStudent.setFont(new java.awt.Font("Segoe UI Historic", 1, 18)); // NOI18N
@@ -245,7 +250,7 @@ public class addStudentForm extends javax.swing.JFrame {
 
                         String stu_id = functions.StudentController.generateStuId(batchNum, mode);
 
-                        Student newStudent = new Student(stu_id, nic, name, -2, -2);
+                        Student newStudent = new Student(stu_id, name, nic, -2, -2);
                         functions.StudentController.addNeStudent(newStudent);
 
                         String message = "<html>"
@@ -284,6 +289,11 @@ public class addStudentForm extends javax.swing.JFrame {
 
         }
     }//GEN-LAST:event_btnAddStudentKeyPressed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        new StudentManagement().setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * @param args the command line arguments

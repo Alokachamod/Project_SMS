@@ -162,7 +162,8 @@ public class StudentManagement extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatchActionPerformed
-
+        new UpdateStudentForm().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnBatchActionPerformed
 
     private void btnAddStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddStudentActionPerformed
