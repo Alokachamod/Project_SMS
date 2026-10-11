@@ -36,7 +36,7 @@ public class StudentController {
         Statement stm = connection.createStatement();
         ResultSet rst = stm.executeQuery(SQL);
         if (rst.next()) {
-            return new Student(rst.getString("id"), rst.getString("name"), rst.getString("nic"), rst.getInt("prfMarks"), rst.getInt("dbmsMarks"));
+            return new Student(rst.getString("id"), rst.getString("name"), rst.getString("nic"), rst.getInt("prf_marks"), rst.getInt("dbms_marks"));
         }
         return null;
     }
@@ -60,15 +60,6 @@ public class StudentController {
         return stm.executeUpdate() > 0;
     }
 
-    public static String getNewStudentId() throws ClassNotFoundException, SQLException {
-        ResultSet rst = DBConnection.getInstance().getConnection().createStatement().executeQuery("Select id from Student order by id desc limit 1");
-        if (rst.next()) {
-            int newIdNo = Integer.parseInt(rst.getString("id").substring(1));
-            return String.format("S%04d", newIdNo + 1);
-        }
-        return "S0001";
-    }
-
     public static Student[] getAllStudent() throws ClassNotFoundException, SQLException {
         ResultSet rst = DBConnection.getInstance().getConnection().createStatement().executeQuery("Select * From Student");
         Student[] studentArray = new Student[0];
@@ -86,28 +77,30 @@ public class StudentController {
     }
 
     public static String generateStuId(int y, String mode) throws SQLException, ClassNotFoundException {
-        boolean isPhysical = mode.trim().equalsIgnoreCase("PHYSICAL");
-        String prefix = (isPhysical ? "PR26" : "OR26") + y;
+        boolean isPhysical = mode != null && mode.trim().equalsIgnoreCase("PHYSICAL");
+        String currentPrefix = (isPhysical ? "PR26" : "OR26") + y;
 
-        // Query the highest ID matching the current prefix pattern
-        String sql = "SELECT id FROM students WHERE id LIKE ? ORDER BY id DESC LIMIT 1";
+        // Matches any student ID that contains the batch number y before the 3-digit counter
+        String sql = "SELECT id FROM students WHERE id LIKE ? OR id LIKE ? ORDER BY RIGHT(id, 3) DESC LIMIT 1";
 
         Connection conn = DBConnection.getInstance().getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, prefix + "%");
+        try (PreparedStatement pstm = conn.prepareStatement(sql)) {
+            pstm.setString(1, "PR26" + y + "%");
+            pstm.setString(2, "OR26" + y + "%");
 
-        ResultSet rs = pstm.executeQuery();
-
-        if (rs.next()) {
-            String lastId = rs.getString("id");
-            // Extract the last 3 numeric digits
-            String lastNumStr = lastId.substring(lastId.length() - 3);
-            int nextCount = Integer.parseInt(lastNumStr) + 1;
-            return prefix + String.format("%03d", nextCount);
-        } else {
-            // First student for this year/prefix
-            return prefix + "001";
+            try (ResultSet rs = pstm.executeQuery()) {
+                if (rs.next()) {
+                    String lastId = rs.getString("id");
+                    // Extract last 3 digits regardless of whether it was PR26 or OR26
+                    String lastNumStr = lastId.substring(lastId.length() - 3);
+                    int nextCount = Integer.parseInt(lastNumStr) + 1;
+                    return currentPrefix + String.format("%03d", nextCount);
+                }
+            }
         }
+
+        // Default if no student has registered in this batch yet
+        return currentPrefix + "001";
     }
 
     public static boolean checkNic(String nic) throws SQLException, ClassNotFoundException {
